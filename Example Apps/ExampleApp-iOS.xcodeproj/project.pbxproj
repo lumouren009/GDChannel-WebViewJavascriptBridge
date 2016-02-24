@@ -8,11 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0E4E9D4C1A101E0B00043087 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E8082DC19EDD98700479452 /* WebKit.framework */; };
-		0E50601C1A01B442000BEEEA /* WebViewJavascriptBridgeBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E50601B1A01B442000BEEEA /* WebViewJavascriptBridgeBase.m */; };
-		0E8082DB19EDC32300479452 /* WKWebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E8082DA19EDC32300479452 /* WKWebViewJavascriptBridge.m */; };
 		0ECB01441A0EE1F20037FF4E /* ExampleWKWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0ECB01431A0EE1F20037FF4E /* ExampleWKWebViewController.m */; };
-		2C1562C0176BA63500B4AE50 /* WebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1562A9176B9F6200B4AE50 /* WebViewJavascriptBridge.m */; };
-		2C3E7C461C5A890A00A1E322 /* WebViewJavascriptBridge_JS.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3E7C451C5A890A00A1E322 /* WebViewJavascriptBridge_JS.m */; };
 		2C45CA2C1884AD520002A4E2 /* ExampleUIWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C45CA2B1884AD520002A4E2 /* ExampleUIWebViewController.m */; };
 		2CA045BF17117439006DEE8B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2CA045B717117439006DEE8B /* InfoPlist.strings */; };
 		2CA045C217117439006DEE8B /* ExampleAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA045BD17117439006DEE8B /* ExampleAppDelegate.m */; };
@@ -22,6 +18,7 @@
 		2CEB3EC01602563600548120 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CEB3EBF1602563600548120 /* UIKit.framework */; };
 		2CEB3EC21602563600548120 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CEB3EC11602563600548120 /* Foundation.framework */; };
 		2CEB3EC41602563600548120 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CEB3EC31602563600548120 /* CoreGraphics.framework */; };
+		462DC0A01C7DABB400EC7163 /* ExampleApp.js in Resources */ = {isa = PBXBuildFile; fileRef = 462DC09F1C7DABB400EC7163 /* ExampleApp.js */; };
 		DC429942138D744875B50ED8 /* libPods-ExampleApp-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A5132F2B9A233FAA5F5E3961 /* libPods-ExampleApp-iOS.a */; };
 /* End PBXBuildFile section */
 
@@ -51,6 +48,7 @@
 		2CEB3EBF1602563600548120 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		2CEB3EC11602563600548120 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2CEB3EC31602563600548120 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		462DC09F1C7DABB400EC7163 /* ExampleApp.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = ExampleApp.js; sourceTree = "<group>"; };
 		A5132F2B9A233FAA5F5E3961 /* libPods-ExampleApp-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExampleApp-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8C10A8028B5E97885D3534B /* Pods-ExampleApp-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleApp-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExampleApp-iOS/Pods-ExampleApp-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		FF0021FD36A06008AE32160D /* Pods-ExampleApp-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleApp-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-ExampleApp-iOS/Pods-ExampleApp-iOS.release.xcconfig"; sourceTree = "<group>"; };
@@ -100,6 +98,7 @@
 		2CA045B617117439006DEE8B /* ExampleApp-iOS */ = {
 			isa = PBXGroup;
 			children = (
+				462DC09F1C7DABB400EC7163 /* ExampleApp.js */,
 				2CA0465B1711AC8D006DEE8B /* ExampleApp.html */,
 				2CA045BC17117439006DEE8B /* ExampleAppDelegate.h */,
 				2CA045BD17117439006DEE8B /* ExampleAppDelegate.m */,
@@ -210,6 +209,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2CA045BF17117439006DEE8B /* InfoPlist.strings in Resources */,
+				462DC0A01C7DABB400EC7163 /* ExampleApp.js in Resources */,
 				2CA0465C1711AC8E006DEE8B /* ExampleApp.html in Resources */,
 				2CAB869B1727684300BD9ED1 /* Default-568h@2x.png in Resources */,
 			);
@@ -270,13 +270,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C3E7C461C5A890A00A1E322 /* WebViewJavascriptBridge_JS.m in Sources */,
-				2C1562C0176BA63500B4AE50 /* WebViewJavascriptBridge.m in Sources */,
-				0E8082DB19EDC32300479452 /* WKWebViewJavascriptBridge.m in Sources */,
 				2C45CA2C1884AD520002A4E2 /* ExampleUIWebViewController.m in Sources */,
 				0ECB01441A0EE1F20037FF4E /* ExampleWKWebViewController.m in Sources */,
 				2CA045C217117439006DEE8B /* ExampleAppDelegate.m in Sources */,
-				0E50601C1A01B442000BEEEA /* WebViewJavascriptBridgeBase.m in Sources */,
 				2CA045C317117439006DEE8B /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -9,3 +9,6 @@
 *.xcuserstate
 *.xcworkspace/
 xcuserdata/
+
+Pods/
+.idea/

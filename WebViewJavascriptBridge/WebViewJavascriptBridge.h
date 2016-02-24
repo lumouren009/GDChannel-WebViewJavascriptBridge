@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "WebViewJavascriptBridgeBase.h"
+@protocol GDCBus;
 
 #if defined __MAC_OS_X_VERSION_MAX_ALLOWED
     #import <WebKit/WebKit.h>
@@ -25,13 +26,9 @@
 
 @interface WebViewJavascriptBridge : WVJB_WEBVIEW_DELEGATE_INTERFACE
 
-+ (instancetype)bridgeForWebView:(WVJB_WEBVIEW_TYPE*)webView;
++ (instancetype)bridgeForWebView:(WVJB_WEBVIEW_TYPE*)webView withBus:(id<GDCBus>) bus;
 + (void)enableLogging;
 + (void)setLogMaxLength:(int)length;
 
-- (void)registerHandler:(NSString*)handlerName handler:(WVJBHandler)handler;
-- (void)callHandler:(NSString*)handlerName;
-- (void)callHandler:(NSString*)handlerName data:(id)data;
-- (void)callHandler:(NSString*)handlerName data:(id)data responseCallback:(WVJBResponseCallback)responseCallback;
 - (void)setWebViewDelegate:(WVJB_WEBVIEW_DELEGATE_TYPE*)webViewDelegate;
 @end

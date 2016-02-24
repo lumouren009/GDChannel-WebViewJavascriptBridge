@@ -8,9 +8,11 @@
 
 #import "ExampleUIWebViewController.h"
 #import "WebViewJavascriptBridge.h"
+#import "GDCBusProvider.h"
 
 @interface ExampleUIWebViewController ()
 @property WebViewJavascriptBridge* bridge;
+@property id<GDCBus> bus;
 @end
 
 @implementation ExampleUIWebViewController
@@ -22,18 +24,22 @@
     [self.view addSubview:webView];
     
     [WebViewJavascriptBridge enableLogging];
+
+    _bus = GDCBusProvider.instance;
+    _bridge = [WebViewJavascriptBridge bridgeForWebView:webView withBus:_bus];
     
-    _bridge = [WebViewJavascriptBridge bridgeForWebView:webView];
-    
-    [_bridge registerHandler:@"testObjcCallback" handler:^(id data, WVJBResponseCallback responseCallback) {
-        NSLog(@"testObjcCallback called: %@", data);
-        responseCallback(@"Response from testObjcCallback");
+    [self.bus subscribeLocal:@"testObjcCallback" handler:^(id <GDCMessage> message) {
+        NSLog(@"testObjcCallback called: %@", message);
+        [message reply:@"Response from testObjcCallback" options:nil replyHandler:^(id <GDCAsyncResult> asyncResult) {
+            NSLog(@"xx");
+        }];
     }];
-    
-    [_bridge callHandler:@"testJavascriptHandler" data:@{ @"foo":@"before ready" }];
-    
+
     [self renderButtons:webView];
     [self loadExamplePage:webView];
+
+    // 收不到
+    [self.bus publishLocal:@"testJavascriptHandler" payload:@{@"foo" : @"before ready"} options:nil];
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
@@ -63,16 +69,20 @@
 }
 
 - (void)callHandler:(id)sender {
-    id data = @{ @"greetingFromObjC": @"Hi there, JS!" };
-    [_bridge callHandler:@"testJavascriptHandler" data:data responseCallback:^(id response) {
-        NSLog(@"testJavascriptHandler responded: %@", response);
+    [self.bus sendLocal:@"testJavascriptHandler" payload:@{ @"greetingFromObjC": @"Hi there, JS!" } options:nil replyHandler:^(id <GDCAsyncResult> asyncResult) {
+        NSLog(@"testJavascriptHandler responded: %@", asyncResult.result);
     }];
 }
 
 - (void)loadExamplePage:(UIWebView*)webView {
     NSString* htmlPath = [[NSBundle mainBundle] pathForResource:@"ExampleApp" ofType:@"html"];
     NSString* appHtml = [NSString stringWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];
-    NSURL *baseURL = [NSURL fileURLWithPath:htmlPath];
+    NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
     [webView loadHTMLString:appHtml baseURL:baseURL];
+//    WebViewJavascriptBridgeBase *base = [self.bridge valueForKey:@"_base"];
+//    [base injectJavascriptFile];
+
+//    NSString *url = [NSString stringWithFormat:@"http://m.v.qq.com/app/live/registry/index.html"];
+//    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
 }
 @end

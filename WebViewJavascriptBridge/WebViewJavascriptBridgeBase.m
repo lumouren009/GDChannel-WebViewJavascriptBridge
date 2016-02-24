@@ -5,13 +5,16 @@
 //  Copyright (c) 2014 @LokiMeyburg. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "WebViewJavascriptBridgeBase.h"
 #import "WebViewJavascriptBridge_JS.h"
+#import "GDCBus.h"
+#import "GDCMessageImpl.h"
+#import "GDCBusProvider.h"
 
 @implementation WebViewJavascriptBridgeBase {
     id _webViewDelegate;
     long _uniqueId;
+    NSMutableDictionary *_consumers;
 }
 
 static bool logging = false;
@@ -22,95 +25,85 @@ static int logMaxLength = 500;
 
 -(id)init {
     self = [super init];
-    self.messageHandlers = [NSMutableDictionary dictionary];
     self.startupMessageQueue = [NSMutableArray array];
-    self.responseCallbacks = [NSMutableDictionary dictionary];
     _uniqueId = 0;
+    _consumers = [NSMutableDictionary dictionary];
     return(self);
 }
 
 - (void)dealloc {
     self.startupMessageQueue = nil;
-    self.responseCallbacks = nil;
-    self.messageHandlers = nil;
+    for (NSString *topic in _consumers) {
+        id<GDCMessageConsumer> consumer = _consumers[topic];
+        [consumer unsubscribe];
+    }
 }
 
 - (void)reset {
     self.startupMessageQueue = [NSMutableArray array];
-    self.responseCallbacks = [NSMutableDictionary dictionary];
     _uniqueId = 0;
+    _consumers = [NSMutableDictionary dictionary];
 }
 
-- (void)sendData:(id)data responseCallback:(WVJBResponseCallback)responseCallback handlerName:(NSString*)handlerName {
-    NSMutableDictionary* message = [NSMutableDictionary dictionary];
-    
-    if (data) {
-        message[@"data"] = data;
-    }
-    
-    if (responseCallback) {
-        NSString* callbackId = [NSString stringWithFormat:@"objc_cb_%ld", ++_uniqueId];
-        self.responseCallbacks[callbackId] = [responseCallback copy];
-        message[@"callbackId"] = callbackId;
-    }
-    
-    if (handlerName) {
-        message[@"handlerName"] = handlerName;
-    }
-    [self _queueMessage:message];
-}
-
-- (void)flushMessageQueue:(NSString *)messageQueueString{
+- (void)flushMessageQueue:(NSString *)messageQueueString {
     if (messageQueueString == nil || messageQueueString.length == 0) {
-        NSLog(@"WebViewJavascriptBridge: WARNING: ObjC got nil while fetching the message queue JSON from webview. This can happen if the WebViewJavascriptBridge JS is not currently present in the webview, e.g if the webview just loaded a new page.");
+        NSLog(@"GDCWebViewJavascriptBus: WARNING: ObjC got nil while fetching the message queue JSON from webview. This can happen if the WebViewJavascriptBridge JS is not currently present in the webview, e.g if the webview just loaded a new page.");
         return;
     }
 
     id messages = [self _deserializeMessageJSON:messageQueueString];
     for (WVJBMessage* message in messages) {
         if (![message isKindOfClass:[WVJBMessage class]]) {
-            NSLog(@"WebViewJavascriptBridge: WARNING: Invalid %@ received: %@", [message class], message);
+            NSLog(@"GDCWebViewJavascriptBus: WARNING: Invalid %@ received: %@", [message class], message);
             continue;
         }
         [self _log:@"RCVD" json:message];
-        
-        NSString* responseId = message[@"responseId"];
-        if (responseId) {
-            WVJBResponseCallback responseCallback = _responseCallbacks[responseId];
-            responseCallback(message[@"responseData"]);
-            [self.responseCallbacks removeObjectForKey:responseId];
-        } else {
-            WVJBResponseCallback responseCallback = NULL;
-            NSString* callbackId = message[@"callbackId"];
-            if (callbackId) {
-                responseCallback = ^(id responseData) {
-                    if (responseData == nil) {
-                        responseData = [NSNull null];
-                    }
-                    
-                    WVJBMessage* msg = @{ @"responseId":callbackId, @"responseData":responseData };
-                    [self _queueMessage:msg];
+
+        __weak WebViewJavascriptBridgeBase *weakSelf = self;
+        NSString *type = message[@"type"];
+        NSString *topic = message[@"topic"];
+        BOOL local = [message[@"local"] boolValue];
+        if ([@"send" isEqualToString:type]) {
+            GDCAsyncResultBlock replyHandler = nil;
+            if (message[@"replyTopic"]) {
+                replyHandler = ^(id <GDCAsyncResult> asyncResult) {
+                    GDCMessageImpl *msg = asyncResult.result;
+                    msg.topic = message[@"replyTopic"];
+                    [weakSelf _queueMessage:[msg toDictWithTopic:YES]];
                 };
+            }
+            if (local) {
+                [self.bus sendLocal:topic payload:message[@"payload"] options:message[@"options"] replyHandler:replyHandler];
             } else {
-                responseCallback = ^(id ignoreResponseData) {
-                    // Do nothing
-                };
+                [self.bus send:topic payload:message[@"payload"] options:message[@"options"] replyHandler:replyHandler];
             }
-            
-            WVJBHandler handler = self.messageHandlers[message[@"handlerName"]];
-            
-            if (!handler) {
-                NSLog(@"WVJBNoHandlerException, No handler for message from JS: %@", message);
-                continue;
+        } else if ([@"publish" isEqualToString:type]) {
+            if (local) {
+                [self.bus publishLocal:topic payload:message[@"payload"] options:message[@"options"]];
+            } else {
+                [self.bus publish:topic payload:message[@"payload"] options:message[@"options"]];
             }
-            
-            handler(message[@"data"], responseCallback);
+        } else if ([@"subscribe" isEqualToString:type]) {
+            void (^handler)(id <GDCMessage>) = ^(id <GDCMessage> message) {
+                GDCMessageImpl *msg = message;
+                [weakSelf _queueMessage:[msg toDictWithTopic:YES]];
+            };
+            if (local) {
+                _consumers[topic] = [self.bus subscribeLocal:topic handler:handler];
+            } else {
+                _consumers[topic] = [self.bus subscribe:topic handler:handler];
+            }
+        } else if ([@"unsubscribe" isEqualToString:type]) {
+            id<GDCMessageConsumer> consumer = _consumers[topic];
+            [consumer unsubscribe];
+            [_consumers removeObjectForKey:topic];
         }
     }
 }
 
 - (void)injectJavascriptFile {
-    NSString *js = WebViewJavascriptBridge_js();
+    NSString *js = GDCJavascriptBus_js();
+    js = [js stringByReplacingOccurrencesOfString:@"JAVASCRIPT_TOPIC_PREFIX" withString:[GDCBusProvider.clientId stringByAppendingString:@"/"]];
     [self _evaluateJavascript:js];
     if (self.startupMessageQueue) {
         NSArray* queue = self.startupMessageQueue;
@@ -146,11 +139,11 @@ static int logMaxLength = 500;
 }
 
 -(NSString *)webViewJavascriptCheckCommand {
-    return @"typeof WebViewJavascriptBridge == \'object\';";
+    return @"typeof GDCWebViewJavascriptBus == \'object\';";
 }
 
 -(NSString *)webViewJavascriptFetchQueyCommand {
-    return @"WebViewJavascriptBridge._fetchQueue();";
+    return @"GDCWebViewJavascriptBus._fetchQueue();";
 }
 
 // Private
@@ -179,8 +172,8 @@ static int logMaxLength = 500;
     messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@"\f" withString:@"\\f"];
     messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@"\u2028" withString:@"\\u2028"];
     messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@"\u2029" withString:@"\\u2029"];
-    
-    NSString* javascriptCommand = [NSString stringWithFormat:@"WebViewJavascriptBridge._handleMessageFromObjC('%@');", messageJSON];
+
+    NSString* javascriptCommand = [NSString stringWithFormat:@"GDCWebViewJavascriptBus._handleMessageFromObjC('%@');", messageJSON];
     if ([[NSThread currentThread] isMainThread]) {
         [self _evaluateJavascript:javascriptCommand];
 

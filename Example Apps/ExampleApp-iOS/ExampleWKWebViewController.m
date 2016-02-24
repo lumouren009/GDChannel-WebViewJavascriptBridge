@@ -20,21 +20,21 @@
 - (void)viewWillAppear:(BOOL)animated {
     if (_bridge) { return; }
     
-    WKWebView* webView = [[NSClassFromString(@"WKWebView") alloc] initWithFrame:self.view.bounds];
-    webView.navigationDelegate = self;
-    [self.view addSubview:webView];
-    [WKWebViewJavascriptBridge enableLogging];
-    _bridge = [WKWebViewJavascriptBridge bridgeForWebView:webView];
-    
-    [_bridge registerHandler:@"testObjcCallback" handler:^(id data, WVJBResponseCallback responseCallback) {
-        NSLog(@"testObjcCallback called: %@", data);
-        responseCallback(@"Response from testObjcCallback");
-    }];
-    
-    [_bridge callHandler:@"testJavascriptHandler" data:@{ @"foo":@"before ready" }];
-    
-    [self renderButtons:webView];
-    [self loadExamplePage:webView];
+//    WKWebView* webView = [[NSClassFromString(@"WKWebView") alloc] initWithFrame:self.view.bounds];
+//    webView.navigationDelegate = self;
+//    [self.view addSubview:webView];
+//    [WKWebViewJavascriptBridge enableLogging];
+//    _bridge = [WKWebViewJavascriptBridge bridgeForWebView:webView];
+//
+//    [_bridge registerHandler:@"testObjcCallback" handler:^(id data, WVJBResponseCallback responseCallback) {
+//        NSLog(@"testObjcCallback called: %@", data);
+//        responseCallback(@"Response from testObjcCallback");
+//    }];
+//
+//    [_bridge callHandler:@"testJavascriptHandler" data:@{ @"foo":@"before ready" }];
+//
+//    [self renderButtons:webView];
+//    [self loadExamplePage:webView];
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
@@ -64,10 +64,10 @@
 }
 
 - (void)callHandler:(id)sender {
-    id data = @{ @"greetingFromObjC": @"Hi there, JS!" };
-    [_bridge callHandler:@"testJavascriptHandler" data:data responseCallback:^(id response) {
-        NSLog(@"testJavascriptHandler responded: %@", response);
-    }];
+//    id data = @{ @"greetingFromObjC": @"Hi there, JS!" };
+//    [_bridge callHandler:@"testJavascriptHandler" data:data responseCallback:^(id response) {
+//        NSLog(@"testJavascriptHandler responded: %@", response);
+//    }];
 }
 
 - (void)loadExamplePage:(WKWebView*)webView {

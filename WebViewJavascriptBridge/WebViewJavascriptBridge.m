@@ -7,6 +7,7 @@
 //
 
 #import "WebViewJavascriptBridge.h"
+#import "GDCBus.h"
 
 #if __has_feature(objc_arc_weak)
     #define WVJB_WEAK __weak
@@ -27,38 +28,14 @@
 + (void)enableLogging { [WebViewJavascriptBridgeBase enableLogging]; }
 + (void)setLogMaxLength:(int)length { [WebViewJavascriptBridgeBase setLogMaxLength:length]; }
 
-+ (instancetype)bridgeForWebView:(WVJB_WEBVIEW_TYPE*)webView {
++ (instancetype)bridgeForWebView:(WVJB_WEBVIEW_TYPE*)webView withBus:(id<GDCBus>) bus {
     WebViewJavascriptBridge* bridge = [[self alloc] init];
-    [bridge _platformSpecificSetup:webView];
+    [bridge _platformSpecificSetup:webView withBus:bus];
     return bridge;
 }
 
 - (void)setWebViewDelegate:(WVJB_WEBVIEW_DELEGATE_TYPE*)webViewDelegate {
     _webViewDelegate = webViewDelegate;
-}
-
-- (void)send:(id)data {
-    [self send:data responseCallback:nil];
-}
-
-- (void)send:(id)data responseCallback:(WVJBResponseCallback)responseCallback {
-    [_base sendData:data responseCallback:responseCallback handlerName:nil];
-}
-
-- (void)callHandler:(NSString *)handlerName {
-    [self callHandler:handlerName data:nil responseCallback:nil];
-}
-
-- (void)callHandler:(NSString *)handlerName data:(id)data {
-    [self callHandler:handlerName data:data responseCallback:nil];
-}
-
-- (void)callHandler:(NSString *)handlerName data:(id)data responseCallback:(WVJBResponseCallback)responseCallback {
-    [_base sendData:data responseCallback:responseCallback handlerName:handlerName];
-}
-
-- (void)registerHandler:(NSString *)handlerName handler:(WVJBHandler)handler {
-    _base.messageHandlers[handlerName] = [handler copy];
 }
 
 /* Platform agnostic internals
@@ -121,11 +98,12 @@
  **********************************/
 #elif defined WVJB_PLATFORM_IOS
 
-- (void) _platformSpecificSetup:(WVJB_WEBVIEW_TYPE*)webView {
+- (void) _platformSpecificSetup:(WVJB_WEBVIEW_TYPE*)webView withBus:(id<GDCBus>) bus {
     _webView = webView;
     _webView.delegate = self;
     _base = [[WebViewJavascriptBridgeBase alloc] init];
     _base.delegate = self;
+    _base.bus = bus;
 }
 
 - (void) _platformSpecificDealloc {
@@ -134,7 +112,7 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     if (webView != _webView) { return; }
-    
+
     __strong WVJB_WEBVIEW_DELEGATE_TYPE* strongDelegate = _webViewDelegate;
     if (strongDelegate && [strongDelegate respondsToSelector:@selector(webViewDidFinishLoad:)]) {
         [strongDelegate webViewDidFinishLoad:webView];
@@ -167,13 +145,14 @@
     } else if (strongDelegate && [strongDelegate respondsToSelector:@selector(webView:shouldStartLoadWithRequest:navigationType:)]) {
         return [strongDelegate webView:webView shouldStartLoadWithRequest:request navigationType:navigationType];
     } else {
+        [_base injectJavascriptFile];
         return YES;
     }
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
     if (webView != _webView) { return; }
-    
+
     __strong WVJB_WEBVIEW_DELEGATE_TYPE* strongDelegate = _webViewDelegate;
     if (strongDelegate && [strongDelegate respondsToSelector:@selector(webViewDidStartLoad:)]) {
         [strongDelegate webViewDidStartLoad:webView];

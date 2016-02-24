@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol GDCBus;
+
 #define kCustomProtocolScheme @"wvjbscheme"
 #define kQueueHasMessage      @"__WVJB_QUEUE_MESSAGE__"
 #define kBridgeLoaded         @"__BRIDGE_LOADED__"
@@ -24,14 +26,11 @@ typedef NSDictionary WVJBMessage;
 
 @property (assign) id <WebViewJavascriptBridgeBaseDelegate> delegate;
 @property (strong, nonatomic) NSMutableArray* startupMessageQueue;
-@property (strong, nonatomic) NSMutableDictionary* responseCallbacks;
-@property (strong, nonatomic) NSMutableDictionary* messageHandlers;
-@property (strong, nonatomic) WVJBHandler messageHandler;
+@property (strong, nonatomic) id<GDCBus> bus;
 
 + (void)enableLogging;
 + (void)setLogMaxLength:(int)length;
 - (void)reset;
-- (void)sendData:(id)data responseCallback:(WVJBResponseCallback)responseCallback handlerName:(NSString*)handlerName;
 - (void)flushMessageQueue:(NSString *)messageQueueString;
 - (void)injectJavascriptFile;
 - (BOOL)isCorrectProcotocolScheme:(NSURL*)url;

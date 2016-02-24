@@ -29,30 +29,6 @@
     return bridge;
 }
 
-- (void)send:(id)data {
-    [self send:data responseCallback:nil];
-}
-
-- (void)send:(id)data responseCallback:(WVJBResponseCallback)responseCallback {
-    [_base sendData:data responseCallback:responseCallback handlerName:nil];
-}
-
-- (void)callHandler:(NSString *)handlerName {
-    [self callHandler:handlerName data:nil responseCallback:nil];
-}
-
-- (void)callHandler:(NSString *)handlerName data:(id)data {
-    [self callHandler:handlerName data:data responseCallback:nil];
-}
-
-- (void)callHandler:(NSString *)handlerName data:(id)data responseCallback:(WVJBResponseCallback)responseCallback {
-    [_base sendData:data responseCallback:responseCallback handlerName:handlerName];
-}
-
-- (void)registerHandler:(NSString *)handlerName handler:(WVJBHandler)handler {
-    _base.messageHandlers[handlerName] = [handler copy];
-}
-
 - (void)reset {
     [_base reset];
 }
