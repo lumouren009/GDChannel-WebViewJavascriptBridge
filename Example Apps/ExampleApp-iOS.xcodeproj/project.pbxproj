@@ -19,6 +19,7 @@
 		2CEB3EC21602563600548120 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CEB3EC11602563600548120 /* Foundation.framework */; };
 		2CEB3EC41602563600548120 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CEB3EC31602563600548120 /* CoreGraphics.framework */; };
 		462DC0A01C7DABB400EC7163 /* ExampleApp.js in Resources */ = {isa = PBXBuildFile; fileRef = 462DC09F1C7DABB400EC7163 /* ExampleApp.js */; };
+		462DC0B51C7DEA0000EC7163 /* GDCWebViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 462DC0B21C7DE24C00EC7163 /* GDCWebViewController.xib */; };
 		DC429942138D744875B50ED8 /* libPods-ExampleApp-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A5132F2B9A233FAA5F5E3961 /* libPods-ExampleApp-iOS.a */; };
 /* End PBXBuildFile section */
 
@@ -49,6 +50,9 @@
 		2CEB3EC11602563600548120 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2CEB3EC31602563600548120 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		462DC09F1C7DABB400EC7163 /* ExampleApp.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = ExampleApp.js; sourceTree = "<group>"; };
+		462DC0B21C7DE24C00EC7163 /* GDCWebViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GDCWebViewController.xib; sourceTree = "<group>"; };
+		61FBC1D8ED4C150A5B303C8C /* GDCWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDCWebViewController.m; sourceTree = "<group>"; };
+		61FBCA7B97E9735BDB4B53B1 /* GDCWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDCWebViewController.h; sourceTree = "<group>"; };
 		A5132F2B9A233FAA5F5E3961 /* libPods-ExampleApp-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExampleApp-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8C10A8028B5E97885D3534B /* Pods-ExampleApp-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleApp-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExampleApp-iOS/Pods-ExampleApp-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		FF0021FD36A06008AE32160D /* Pods-ExampleApp-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleApp-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-ExampleApp-iOS/Pods-ExampleApp-iOS.release.xcconfig"; sourceTree = "<group>"; };
@@ -90,6 +94,9 @@
 				0E8082D919EDC32300479452 /* WKWebViewJavascriptBridge.h */,
 				0E50601B1A01B442000BEEEA /* WebViewJavascriptBridgeBase.m */,
 				0E50601D1A01B44C000BEEEA /* WebViewJavascriptBridgeBase.h */,
+				61FBC1D8ED4C150A5B303C8C /* GDCWebViewController.m */,
+				61FBCA7B97E9735BDB4B53B1 /* GDCWebViewController.h */,
+				462DC0B21C7DE24C00EC7163 /* GDCWebViewController.xib */,
 			);
 			name = WebViewJavascriptBridge;
 			path = ../../WebViewJavascriptBridge;
@@ -208,6 +215,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				462DC0B51C7DEA0000EC7163 /* GDCWebViewController.xib in Resources */,
 				2CA045BF17117439006DEE8B /* InfoPlist.strings in Resources */,
 				462DC0A01C7DABB400EC7163 /* ExampleApp.js in Resources */,
 				2CA0465C1711AC8E006DEE8B /* ExampleApp.html in Resources */,

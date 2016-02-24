@@ -24,7 +24,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Aspects: 7595ba96a6727a58ebcbfc954497fc5d2fdde546
   GDChannel: 81bb1d279bcd3dec1435f4b774c1018a548f5b0e
-  GDChannel+JavascriptBridge: 4d2dbf9316709b804f9d3d8229b1fcc0439d63fe
+  GDChannel+JavascriptBridge: fcb1856aaf7a5b38f510cd8677937fbfd825e05c
   Mantle: 299966b00759634931699f69cb6a30b9239b944d
   MQTTKit: a4e6b8aa92db1aeae917d2b773fd72a7749937c4
 
