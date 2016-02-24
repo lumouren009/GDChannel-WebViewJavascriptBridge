@@ -1,0 +1,5 @@
+target 'ExampleApp-iOS' do
+  pod "GDChannel+JavascriptBridge", :path => "../"
+end
+
+xcodeproj 'ExampleApp-iOS.xcodeproj'

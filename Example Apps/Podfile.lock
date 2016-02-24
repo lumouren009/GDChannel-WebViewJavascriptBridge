@@ -1,0 +1,22 @@
+PODS:
+  - GDChannel (0.6.0):
+    - MQTTKit (~> 0.1.0)
+  - GDChannel+JavascriptBridge (5.0.5):
+    - GDChannel (~> 0.6)
+  - MQTTKit (0.1.0)
+
+DEPENDENCIES:
+  - GDChannel+JavascriptBridge (from `../`)
+
+EXTERNAL SOURCES:
+  GDChannel+JavascriptBridge:
+    :path: ../
+
+SPEC CHECKSUMS:
+  GDChannel: 021418a45a287d9f3629b4aeefbdc457a7684fe3
+  GDChannel+JavascriptBridge: 4d2dbf9316709b804f9d3d8229b1fcc0439d63fe
+  MQTTKit: a4e6b8aa92db1aeae917d2b773fd72a7749937c4
+
+PODFILE CHECKSUM: 21d2932a4858234627493fb4664512a344743a12
+
+COCOAPODS: 1.0.0.beta.3
