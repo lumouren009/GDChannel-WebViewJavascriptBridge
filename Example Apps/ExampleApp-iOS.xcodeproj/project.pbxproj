@@ -190,8 +190,9 @@
 		2CEB3EB21602563600548120 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				CLASSPREFIX = GDC;
 				LastUpgradeCheck = 0500;
-				ORGANIZATIONNAME = "Marcus Westin";
+				ORGANIZATIONNAME = Goodow.com;
 			};
 			buildConfigurationList = 2CEB3EB51602563600548120 /* Build configuration list for PBXProject "ExampleApp-iOS" */;
 			compatibilityVersion = "Xcode 3.2";

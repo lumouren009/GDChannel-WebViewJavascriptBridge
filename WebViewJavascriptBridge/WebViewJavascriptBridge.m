@@ -143,9 +143,12 @@
         }
         return NO;
     } else if (strongDelegate && [strongDelegate respondsToSelector:@selector(webView:shouldStartLoadWithRequest:navigationType:)]) {
-        return [strongDelegate webView:webView shouldStartLoadWithRequest:request navigationType:navigationType];
+        BOOL toRtn = [strongDelegate webView:webView shouldStartLoadWithRequest:request navigationType:navigationType];
+        if (toRtn && ![url.absoluteString isEqualToString:@"about:blank"]) {
+            [_base injectJavascriptFile];
+        }
+        return toRtn;
     } else {
-        [_base injectJavascriptFile];
         return YES;
     }
 }

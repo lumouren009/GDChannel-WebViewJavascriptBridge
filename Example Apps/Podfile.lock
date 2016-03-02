@@ -6,28 +6,44 @@ PODS:
     - MQTTKit (~> 0.1.0)
   - GDChannel+JavascriptBridge (5.0.5):
     - GDChannel (~> 0.6)
+    - NJKWebViewProgress (~> 0.2)
   - Mantle (2.0.6):
     - Mantle/extobjc (= 2.0.6)
   - Mantle/extobjc (2.0.6)
   - MQTTKit (0.1.0)
+  - NJKWebViewProgress (0.2.3):
+    - NJKWebViewProgress/Core (= 0.2.3)
+    - NJKWebViewProgress/ProgressView (= 0.2.3)
+  - NJKWebViewProgress/Core (0.2.3)
+  - NJKWebViewProgress/ProgressView (0.2.3)
 
 DEPENDENCIES:
   - GDChannel (from `../../`)
   - GDChannel+JavascriptBridge (from `../`)
+  - NJKWebViewProgress (from `https://github.com/ninjinkun/NJKWebViewProgress.git`, commit `377b7e1`)
 
 EXTERNAL SOURCES:
   GDChannel:
     :path: ../../
   GDChannel+JavascriptBridge:
     :path: ../
+  NJKWebViewProgress:
+    :commit: 377b7e1
+    :git: https://github.com/ninjinkun/NJKWebViewProgress.git
+
+CHECKOUT OPTIONS:
+  NJKWebViewProgress:
+    :commit: 377b7e1
+    :git: https://github.com/ninjinkun/NJKWebViewProgress.git
 
 SPEC CHECKSUMS:
   Aspects: 7595ba96a6727a58ebcbfc954497fc5d2fdde546
   GDChannel: 81bb1d279bcd3dec1435f4b774c1018a548f5b0e
-  GDChannel+JavascriptBridge: fcb1856aaf7a5b38f510cd8677937fbfd825e05c
+  GDChannel+JavascriptBridge: 4d8e4ec7400480d2cfb4bd51b420a955151796ff
   Mantle: 299966b00759634931699f69cb6a30b9239b944d
   MQTTKit: a4e6b8aa92db1aeae917d2b773fd72a7749937c4
+  NJKWebViewProgress: f481fd424cb5ecc27eacae11b5397db92fba9a4d
 
-PODFILE CHECKSUM: 5519822141f3e50788798e85df70333d6f43543b
+PODFILE CHECKSUM: 7a472f2a32a4589bf4bf05c764404a01fcd362a7
 
 COCOAPODS: 1.0.0.beta.3

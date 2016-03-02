@@ -1,6 +1,7 @@
 target 'ExampleApp-iOS' do
-  pod "GDChannel+JavascriptBridge", :path => "../"
-  pod 'GDChannel', :path => "../../"
+  pod 'GDChannel+JavascriptBridge', :path => '../'
+  pod 'GDChannel', :path => '../../'
+  pod 'NJKWebViewProgress', :git => 'https://github.com/ninjinkun/NJKWebViewProgress.git', :commit => '377b7e1'
 end
 
 project 'ExampleApp-iOS.xcodeproj'

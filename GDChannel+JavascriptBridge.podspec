@@ -16,5 +16,6 @@ Pod::Spec.new do |s|
   s.osx.framework    = 'WebKit'
 
   s.dependency 'GDChannel', '~> 0.6'
+  s.dependency 'NJKWebViewProgress', '~> 0.2'
   s.resources = ['WebViewJavascriptBridge/*.xib']
 end

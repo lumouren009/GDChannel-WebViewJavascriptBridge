@@ -7,6 +7,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="GDCWebViewController">
             <connections>
+                <outlet property="progressView" destination="qXR-v2-vHa" id="u4E-QH-RQA"/>
+                <outlet property="progressViewConstraint" destination="hX0-gD-8vK" id="YWI-qN-BfO"/>
                 <outlet property="view" destination="iN0-l3-epB" id="fYa-hA-Zlj"/>
                 <outlet property="webView" destination="nAs-bW-had" id="EsJ-At-mNP"/>
             </connections>
@@ -20,13 +22,22 @@
                     <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                     <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
                 </webView>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qXR-v2-vHa" customClass="NJKWebViewProgressView">
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="2"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="2" id="Qmi-6V-tKF"/>
+                    </constraints>
+                </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="nAs-bW-had" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" id="0zr-KB-cCz"/>
+                <constraint firstItem="qXR-v2-vHa" firstAttribute="width" secondItem="nAs-bW-had" secondAttribute="width" id="6bW-ac-J1t"/>
                 <constraint firstItem="nAs-bW-had" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="CaX-1W-o3s"/>
                 <constraint firstItem="nAs-bW-had" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="MLn-fj-T7f"/>
+                <constraint firstItem="qXR-v2-vHa" firstAttribute="top" secondItem="nAs-bW-had" secondAttribute="top" id="hX0-gD-8vK"/>
                 <constraint firstItem="nAs-bW-had" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="u9d-4a-BsW"/>
+                <constraint firstItem="qXR-v2-vHa" firstAttribute="centerX" secondItem="nAs-bW-had" secondAttribute="centerX" id="zra-ET-kha"/>
             </constraints>
         </view>
     </objects>

@@ -28,6 +28,9 @@
     [navigationController pushViewController:webViewController animated:YES];
     [tabBarController addChildViewController:navigationController];
 
+    navigationController.navigationBar.barStyle = UIBarStyleBlack;
+    navigationController.navigationBar.tintColor = [UIColor whiteColor];
+
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = tabBarController;
     [self.window makeKeyAndVisible];
