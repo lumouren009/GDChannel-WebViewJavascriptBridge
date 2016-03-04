@@ -12,7 +12,7 @@
 @interface GDCWebViewController () <UIWebViewDelegate, NJKWebViewProgressDelegate>
 @property(weak, nonatomic) IBOutlet UIWebView *webView;
 @property(weak, nonatomic) IBOutlet NJKWebViewProgressView *progressView;
-@property(weak, nonatomic) IBOutlet NSLayoutConstraint *progressViewConstraint;
+@property (weak, nonatomic) IBOutlet UIView *tapToReloadView;
 @end
 
 @implementation GDCWebViewController {
@@ -21,6 +21,7 @@
   id <AspectToken> _aspectHook;
 
   NJKWebViewProgress *_progressProxy;
+  NSString *_url;
 }
 
 #pragma mark - View lifecycle
@@ -31,20 +32,14 @@
   _progressProxy = [[NJKWebViewProgress alloc] init];
   _progressProxy.webViewProxyDelegate = self;
   _progressProxy.progressDelegate = self;
+  NSDictionary *views = @{@"progressView" : self.progressView, @"topLayoutGuide" : self.topLayoutGuide};
+  [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topLayoutGuide]-0-[progressView]" options:0 metrics:nil views:views]];
 
   _bridge = [WebViewJavascriptBridge bridgeForWebView:self.webView withBus:self.bus];
   [_bridge setWebViewDelegate:_progressProxy];
   self.navigationItem.leftItemsSupplementBackButton = YES;
   _webView.scalesPageToFit = YES;
 }
-
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-
-  CGRect navBarFrame = self.navigationController.navigationBar.frame;
-  self.progressViewConstraint.constant = navBarFrame.origin.y + navBarFrame.size.height;
-}
-
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
@@ -54,7 +49,7 @@
       UINavigationController *instance = info.instance;
       BOOL toRtn;
       if ([instance.topViewController isKindOfClass:GDCWebViewController.class]) {
-        GDCWebViewController *webViewController = instance.topViewController;
+        GDCWebViewController *webViewController = (GDCWebViewController *) instance.topViewController;
         if (webViewController.webView.canGoBack) {
           [webViewController.webView goBack];
           [weakSelf updateNavBarItems];
@@ -81,7 +76,14 @@
 
 - (void)openUrl:(NSString *)url {
   [self view];
-  [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
+  _url = url;
+  if ([url hasPrefix:@"/"]) {
+    NSString *htmlStr = [NSString stringWithContentsOfFile:url encoding:NSUTF8StringEncoding error:nil];
+    NSURL *baseUrl = [NSURL fileURLWithPath:url.stringByDeletingLastPathComponent];
+    [self.webView loadHTMLString:htmlStr baseURL:baseUrl];
+  } else {
+    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
+  }
 }
 
 - (void)handleMessage:(id <GDCMessage>)message {
@@ -113,15 +115,10 @@
   [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (void)handleReload:(UIBarButtonItem *)sender {
-  [self.webView reload];
-}
-
 #pragma mark - UIWebViewDelegate
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-//  [self updateNavBarItems];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
@@ -131,12 +128,16 @@
     title = [[title substringToIndex:9] stringByAppendingString:@"…"];
   }
   self.title = title;
-//  [self updateNavBarItems];
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-//  [self updateNavBarItems];
+  self.tapToReloadView.hidden = NO;
+}
+
+- (IBAction)tapToReload:(UITapGestureRecognizer *)gestureRecognizer {
+  self.tapToReloadView.hidden = YES;
+  [self openUrl:_url];
 }
 
 #pragma mark - NJKWebViewProgressDelegate

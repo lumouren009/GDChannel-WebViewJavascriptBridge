@@ -8,7 +8,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="GDCWebViewController">
             <connections>
                 <outlet property="progressView" destination="qXR-v2-vHa" id="u4E-QH-RQA"/>
-                <outlet property="progressViewConstraint" destination="hX0-gD-8vK" id="YWI-qN-BfO"/>
+                <outlet property="tapToReloadView" destination="xpf-nC-XjA" id="S4V-gO-34F"/>
                 <outlet property="view" destination="iN0-l3-epB" id="fYa-hA-Zlj"/>
                 <outlet property="webView" destination="nAs-bW-had" id="EsJ-At-mNP"/>
             </connections>
@@ -22,23 +22,53 @@
                     <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                     <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
                 </webView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qXR-v2-vHa" customClass="NJKWebViewProgressView">
-                    <rect key="frame" x="0.0" y="0.0" width="600" height="2"/>
+                <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qXR-v2-vHa" customClass="NJKWebViewProgressView">
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="3"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="2" id="Qmi-6V-tKF"/>
+                        <constraint firstAttribute="height" constant="3" id="Qmi-6V-tKF"/>
                     </constraints>
+                </view>
+                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xpf-nC-XjA">
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="网络出错, 轻触屏幕重新加载" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SHZ-r8-bGf">
+                            <rect key="frame" x="0.0" y="100" width="600" height="21"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <gestureRecognizers/>
+                    <constraints>
+                        <constraint firstItem="SHZ-r8-bGf" firstAttribute="width" secondItem="xpf-nC-XjA" secondAttribute="width" id="LIV-MW-Bia"/>
+                        <constraint firstItem="SHZ-r8-bGf" firstAttribute="centerX" secondItem="xpf-nC-XjA" secondAttribute="centerX" id="RD2-lC-AMM"/>
+                        <constraint firstItem="SHZ-r8-bGf" firstAttribute="top" secondItem="xpf-nC-XjA" secondAttribute="top" constant="100" id="YBJ-tY-IzW"/>
+                    </constraints>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="4BQ-gB-Yco" appends="YES" id="0ru-HW-f3F"/>
+                    </connections>
                 </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="nAs-bW-had" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" id="0zr-KB-cCz"/>
                 <constraint firstItem="qXR-v2-vHa" firstAttribute="width" secondItem="nAs-bW-had" secondAttribute="width" id="6bW-ac-J1t"/>
+                <constraint firstItem="xpf-nC-XjA" firstAttribute="centerY" secondItem="nAs-bW-had" secondAttribute="centerY" id="9c3-4G-5A1"/>
                 <constraint firstItem="nAs-bW-had" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="CaX-1W-o3s"/>
+                <constraint firstItem="xpf-nC-XjA" firstAttribute="width" secondItem="nAs-bW-had" secondAttribute="width" id="LZ9-YQ-o4p"/>
                 <constraint firstItem="nAs-bW-had" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="MLn-fj-T7f"/>
-                <constraint firstItem="qXR-v2-vHa" firstAttribute="top" secondItem="nAs-bW-had" secondAttribute="top" id="hX0-gD-8vK"/>
+                <constraint firstItem="xpf-nC-XjA" firstAttribute="centerX" secondItem="nAs-bW-had" secondAttribute="centerX" id="POS-rT-HVJ"/>
+                <constraint firstItem="qXR-v2-vHa" firstAttribute="top" secondItem="nAs-bW-had" secondAttribute="top" placeholder="YES" id="hX0-gD-8vK"/>
+                <constraint firstItem="xpf-nC-XjA" firstAttribute="height" secondItem="nAs-bW-had" secondAttribute="height" id="oFb-FB-yeD"/>
                 <constraint firstItem="nAs-bW-had" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="u9d-4a-BsW"/>
                 <constraint firstItem="qXR-v2-vHa" firstAttribute="centerX" secondItem="nAs-bW-had" secondAttribute="centerX" id="zra-ET-kha"/>
             </constraints>
+            <point key="canvasLocation" x="351" y="370"/>
         </view>
+        <tapGestureRecognizer id="4BQ-gB-Yco">
+            <connections>
+                <action selector="tapToReload:" destination="-1" id="I7H-bm-WRm"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
 </document>
