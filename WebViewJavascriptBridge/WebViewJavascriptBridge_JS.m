@@ -12,7 +12,7 @@
 
 NSString * GDCJavascriptBus_js() {
 	#define __wvjb_js_func__(x) #x
-	
+
 	// BEGIN preprocessorJSCode
 	static NSString * preprocessorJSCode = @__wvjb_js_func__(
 ;(function() {
@@ -180,15 +180,17 @@ NSString * GDCJavascriptBus_js() {
 			};
 			return {unsubscribe: unsubscribe};
 		}
-		var messagingIframe;
+		var messagingIframe = document.createElement('iframe');
+		messagingIframe.style.display = 'none';
+		messagingIframe.src = 'wvjbscheme://__WVJB_QUEUE_MESSAGE__';
+
 		function _doSend(message, responseCallback) {
 			sendMessageQueue.push(message);
-			if (!messagingIframe) {
-				messagingIframe = document.createElement('iframe');
-				messagingIframe.style.display = 'none';
+			if (!messagingIframe.parentNode) {
 				document.documentElement.appendChild(messagingIframe);
+			} else {
+				messagingIframe.src = messagingIframe.src;
 			}
-			messagingIframe.src = 'wvjbscheme://__WVJB_QUEUE_MESSAGE__';
 		}
 
 		// are we ready?

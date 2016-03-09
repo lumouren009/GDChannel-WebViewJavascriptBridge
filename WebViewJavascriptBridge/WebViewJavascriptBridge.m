@@ -121,7 +121,7 @@
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     if (webView != _webView) { return; }
-    
+
     __strong WVJB_WEBVIEW_DELEGATE_TYPE* strongDelegate = _webViewDelegate;
     if (strongDelegate && [strongDelegate respondsToSelector:@selector(webView:didFailLoadWithError:)]) {
         [strongDelegate webView:webView didFailLoadWithError:error];
@@ -144,8 +144,20 @@
         return NO;
     } else if (strongDelegate && [strongDelegate respondsToSelector:@selector(webView:shouldStartLoadWithRequest:navigationType:)]) {
         BOOL toRtn = [strongDelegate webView:webView shouldStartLoadWithRequest:request navigationType:navigationType];
-        if (toRtn && ![url.absoluteString isEqualToString:@"about:blank"]) {
-            [_base injectJavascriptFile];
+        if (toRtn && navigationType != UIWebViewNavigationTypeFormSubmitted && navigationType != UIWebViewNavigationTypeFormResubmitted
+            && [request.mainDocumentURL isEqual:request.URL]) {
+            BOOL isFragmentJump = NO;
+            if (request.URL.fragment) {
+                NSString *nonFragmentURL = [request.URL.absoluteString stringByReplacingOccurrencesOfString:[@"#" stringByAppendingString:request.URL.fragment] withString:@""];
+                NSString *currentNonFragmentURL = webView.request.URL.absoluteString;
+//                if (webView.request.URL.fragment) {
+//                    currentNonFragmentURL = [currentNonFragmentURL stringByReplacingOccurrencesOfString:[@"#" stringByAppendingString:webView.request.URL.fragment] withString:@""];
+//                }
+                isFragmentJump = [nonFragmentURL isEqualToString:currentNonFragmentURL];
+            }
+            if (!isFragmentJump) {
+                [_base injectJavascriptFile];
+            }
         }
         return toRtn;
     } else {

@@ -21,7 +21,8 @@
   id <AspectToken> _aspectHook;
 
   NJKWebViewProgress *_progressProxy;
-  NSString *_url;
+  NSURL *_url;
+  BOOL _isTopLevelNavigation;
 }
 
 #pragma mark - View lifecycle
@@ -76,7 +77,6 @@
 
 - (void)openUrl:(NSString *)url {
   [self view];
-  _url = url;
   if ([url hasPrefix:@"/"]) {
     NSString *htmlStr = [NSString stringWithContentsOfFile:url encoding:NSUTF8StringEncoding error:nil];
     NSURL *baseUrl = [NSURL fileURLWithPath:url.stringByDeletingLastPathComponent];
@@ -117,12 +117,24 @@
 
 #pragma mark - UIWebViewDelegate
 
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+  _isTopLevelNavigation = [request.mainDocumentURL isEqual:request.URL];
+  if (_isTopLevelNavigation) {
+    _url = request.URL;
+  }
+  return YES;
+}
+
 - (void)webViewDidStartLoad:(UIWebView *)webView {
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
+  if (!_isTopLevelNavigation) {
+    return;
+  }
   NSString *title = [self.webView stringByEvaluatingJavaScriptFromString:@"document.title"];
   if (title.length > 10) {
     title = [[title substringToIndex:9] stringByAppendingString:@"…"];
@@ -131,13 +143,18 @@
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+  NSLog(@"%s error: %@", __PRETTY_FUNCTION__, error);
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+
+  if (!_isTopLevelNavigation) {
+    return;
+  }
   self.tapToReloadView.hidden = NO;
 }
 
 - (IBAction)tapToReload:(UITapGestureRecognizer *)gestureRecognizer {
   self.tapToReloadView.hidden = YES;
-  [self openUrl:_url];
+  [self.webView loadRequest:[NSURLRequest requestWithURL:_url]];
 }
 
 #pragma mark - NJKWebViewProgressDelegate
