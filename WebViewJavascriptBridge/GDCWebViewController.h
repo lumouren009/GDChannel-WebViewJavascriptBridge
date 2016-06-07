@@ -7,6 +7,8 @@
 
 @interface GDCWebViewController : UIViewController
 
+@property (nullable, nonatomic, assign) id <UIWebViewDelegate> delegate;
+
 - (void)openUrl:(NSString *)url;
 
 @end

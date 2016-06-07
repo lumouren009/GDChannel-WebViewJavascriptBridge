@@ -88,6 +88,9 @@
 
 - (void)handleMessage:(id <GDCMessage>)message {
   NSDictionary *payload = message.payload;
+  if (payload[@"delegate"]) {
+    self.delegate = payload[@"delegate"];
+  }
   NSString *url = payload[@"url"];
   if (url) {
     [self openUrl:url];
@@ -122,11 +125,17 @@
   if (_isTopLevelNavigation) {
     _url = request.URL;
   }
+  if ([self.delegate respondsToSelector:@selector(webView:shouldStartLoadWithRequest:navigationType:)]) {
+    return [self.delegate webView:webView shouldStartLoadWithRequest:request navigationType:navigationType];
+  }
   return YES;
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView {
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+  if ([self.delegate respondsToSelector:@selector(webViewDidStartLoad:)]) {
+    [self.delegate webViewDidStartLoad:webView];
+  }
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
@@ -140,16 +149,23 @@
     title = [[title substringToIndex:9] stringByAppendingString:@"…"];
   }
   self.title = title;
+  if ([self.delegate respondsToSelector:@selector(webViewDidFinishLoad:)]) {
+    [self.delegate webViewDidFinishLoad:webView];
+  }
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
   NSLog(@"%s error: %@", __PRETTY_FUNCTION__, error);
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 
-  if (!_isTopLevelNavigation) {
+  if (webView.request.URL.absoluteString.length != 0 || !_isTopLevelNavigation) {
+    // ignore these failures: 1 jump links from opened page (not the first open); 2 ajax request
     return;
   }
   self.tapToReloadView.hidden = NO;
+  if ([self.delegate respondsToSelector:@selector(webView:didFailLoadWithError:)]) {
+    [self.delegate webView:webView didFailLoadWithError:error];
+  }
 }
 
 - (IBAction)tapToReload:(UITapGestureRecognizer *)gestureRecognizer {
