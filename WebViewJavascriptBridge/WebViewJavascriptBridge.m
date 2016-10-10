@@ -161,7 +161,8 @@
         }
         return toRtn;
     } else {
-        return YES;
+      [_base injectJavascriptFile];
+      return YES;
     }
 }
 

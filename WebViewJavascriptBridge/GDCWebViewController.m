@@ -44,6 +44,9 @@
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
+  // 临时避免连续push两个GDCWebViewController实例后, 手势返回导致导航栏显示异常
+  self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+  
   __weak GDCWebViewController *weakSelf = self;
   _aspectHook = [self.navigationController aspect_hookSelector:@selector(navigationBar:shouldPopItem:) withOptions:AspectPositionInstead usingBlock:^(id <AspectInfo> info) {
       NSInvocation *invocation = info.originalInvocation;
@@ -65,6 +68,11 @@
       [invocation getReturnValue:&toRtn];
       [invocation setReturnValue:&toRtn];
   }                                                      error:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  self.navigationController.interactivePopGestureRecognizer.enabled = YES;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -94,6 +102,9 @@
   NSString *url = payload[@"url"];
   if (url) {
     [self openUrl:url];
+  }
+  if (payload[@"rightBarButtonItem"]) {
+    self.navigationItem.rightBarButtonItem = payload[@"rightBarButtonItem"];
   }
 }
 

@@ -69,7 +69,7 @@ static int logMaxLength = 500;
                 replyHandler = ^(id <GDCAsyncResult> asyncResult) {
                     GDCMessageImpl *msg = asyncResult.result;
                     msg.topic = message[@"replyTopic"];
-                    [weakSelf _queueMessage:[msg toDictWithTopic:YES]];
+                    [weakSelf _queueMessage:[msg toJsonWithTopic:YES]];
                 };
             }
             if (local) {
@@ -86,7 +86,7 @@ static int logMaxLength = 500;
         } else if ([@"subscribe" isEqualToString:type]) {
             void (^handler)(id <GDCMessage>) = ^(id <GDCMessage> message) {
                 GDCMessageImpl *msg = message;
-                [weakSelf _queueMessage:[msg toDictWithTopic:YES]];
+                [weakSelf _queueMessage:[msg toJsonWithTopic:YES]];
             };
             if (local) {
                 _consumers[topic] = [self.bus subscribeLocal:topic handler:handler];
