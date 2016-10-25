@@ -72,13 +72,13 @@
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
   self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+  [_aspectHook remove];
+  _aspectHook = nil;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-  [_aspectHook remove];
-  _aspectHook = nil;
 }
 
 
