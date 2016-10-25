@@ -125,7 +125,7 @@
 }
 
 - (void)handleClose:(UIBarButtonItem *)sender {
-  [self.navigationController popViewControllerAnimated:YES];
+  [GDDViewControllerHelper up:nil];
 }
 
 #pragma mark - UIWebViewDelegate
