@@ -1,8 +1,10 @@
+platform :ios, '8.0'
 target 'ExampleApp-iOS' do
   pod 'GDChannel+WebViewJavascriptBridge', :path => '../'
   pod 'GDChannel', :git => 'https://github.com/goodow/GDChannel.git', :branch => 'master'
   pod 'NJKWebViewProgress', :git => 'https://github.com/ninjinkun/NJKWebViewProgress.git', :commit => '377b7e1'
   pod 'Aspects', '~> 1.4'
+  pod 'GDDataDrivenView', :git => 'https://github.com/goodow/GDDataDrivenView.git'
 end
 
 project 'ExampleApp-iOS.xcodeproj'

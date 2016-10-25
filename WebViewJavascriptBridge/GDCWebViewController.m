@@ -8,6 +8,7 @@
 #import "Aspects.h"
 #import "NJKWebViewProgress.h"
 #import "NJKWebViewProgressView.h"
+#import "GDDViewControllerHelper.h"
 
 @interface GDCWebViewController () <UIWebViewDelegate, NJKWebViewProgressDelegate>
 @property(weak, nonatomic) IBOutlet UIWebView *webView;
@@ -64,9 +65,7 @@
           return;
         }
       }
-      [invocation invoke];
-      [invocation getReturnValue:&toRtn];
-      [invocation setReturnValue:&toRtn];
+      [GDDViewControllerHelper up:nil];
   }                                                      error:nil];
 }
 
