@@ -115,6 +115,7 @@
 
     __strong WVJB_WEBVIEW_DELEGATE_TYPE* strongDelegate = _webViewDelegate;
     if (strongDelegate && [strongDelegate respondsToSelector:@selector(webViewDidFinishLoad:)]) {
+        [_base injectJavascriptFile];
         [strongDelegate webViewDidFinishLoad:webView];
     }
 }
