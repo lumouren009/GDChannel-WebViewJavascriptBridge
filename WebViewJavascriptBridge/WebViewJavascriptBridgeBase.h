@@ -12,6 +12,7 @@
 #define kCustomProtocolScheme @"wvjbscheme"
 #define kQueueHasMessage      @"__WVJB_QUEUE_MESSAGE__"
 #define kBridgeLoaded         @"__BRIDGE_LOADED__"
+#define kJsBridgeTopicPrefix  @"jsBridge"
 
 typedef void (^WVJBResponseCallback)(id responseData);
 typedef void (^WVJBHandler)(id data, WVJBResponseCallback responseCallback);

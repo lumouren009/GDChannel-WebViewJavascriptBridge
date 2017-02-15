@@ -8,29 +8,31 @@
 #import "Aspects.h"
 #import "NJKWebViewProgress.h"
 #import "NJKWebViewProgressView.h"
-#import "GDDViewControllerHelper.h"
+#import "GDDViewControllerTransition.h"
 
 @interface GDCWebViewController () <UIWebViewDelegate, NJKWebViewProgressDelegate>
-@property(weak, nonatomic) IBOutlet UIWebView *webView;
 @property(weak, nonatomic) IBOutlet NJKWebViewProgressView *progressView;
 @property (weak, nonatomic) IBOutlet UIView *tapToReloadView;
 @end
 
 @implementation GDCWebViewController {
   WebViewJavascriptBridge *_bridge;
+  UIBarButtonItem *_backButtonItem;
   UIBarButtonItem *_closeButtonItem;
+  UIBarButtonItem *_moreInfoButtonItem;
   id <AspectToken> _aspectHook;
 
   NJKWebViewProgress *_progressProxy;
   NSURL *_url;
   BOOL _isTopLevelNavigation;
+  void (^_moreButtonClickedBlock)();
 }
 
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-
+  _progressView.progressBarView.backgroundColor = [UIColor colorWithRed:251.f/255.f green:146.f/255.f blue:54.f/255.f alpha:1];
   _progressProxy = [[NJKWebViewProgress alloc] init];
   _progressProxy.webViewProxyDelegate = self;
   _progressProxy.progressDelegate = self;
@@ -39,12 +41,21 @@
 
   _bridge = [WebViewJavascriptBridge bridgeForWebView:self.webView withBus:self.bus];
   [_bridge setWebViewDelegate:_progressProxy];
-  self.navigationItem.leftItemsSupplementBackButton = YES;
+  self.navigationItem.hidesBackButton = YES;
+  [self.navigationItem setLeftBarButtonItems:@[self.backButtonItem] animated:NO];
+
+  UINavigationBar *navBar = self.navigationController.navigationBar;
+  [navBar setTintColor:[UIColor blackColor]];
+  [navBar setTranslucent:NO];
+  [navBar setTitleTextAttributes:@{NSFontAttributeName: [UIFont systemFontOfSize:18], NSForegroundColorAttributeName: [UIColor blackColor]}];
+  
   _webView.scalesPageToFit = YES;
+  _webView.allowsInlineMediaPlayback = YES; //允许使用H5内置播放器
 }
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
+  
   // 临时避免连续push两个GDCWebViewController实例后, 手势返回导致导航栏显示异常
   self.navigationController.interactivePopGestureRecognizer.enabled = NO;
   
@@ -65,7 +76,7 @@
           return;
         }
       }
-      [GDDViewControllerHelper up:nil];
+      GDDViewControllerTransition.new.toUp();
   }                                                      error:nil];
 }
 
@@ -81,7 +92,11 @@
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 }
 
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+  return UIInterfaceOrientationMaskPortrait;
+}
 
+#pragma mark - public methods
 - (void)openUrl:(NSString *)url {
   [self view];
   if ([url hasPrefix:@"/"]) {
@@ -93,27 +108,49 @@
   }
 }
 
-- (void)handleMessage:(id <GDCMessage>)message {
-  NSDictionary *payload = message.payload;
-  if (payload[@"delegate"]) {
-    self.delegate = payload[@"delegate"];
+- (void)addMoreInfoButtonWithAppearance:(GDCMoreInfoButtonAppearance *)appearance handler:(void(^)())handler {
+  _moreButtonClickedBlock = [handler copy];
+  
+  if (appearance.type == GDCMoreInfoButtonTypeShare) {
+    _moreInfoButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_more"] style:UIBarButtonItemStylePlain target:self action:@selector(handleMoreInfo:)];
+  } else if (appearance.type == GDCMoreInfoButtonTypeAction) {
+    _moreInfoButtonItem = [[UIBarButtonItem alloc] initWithTitle:appearance.title style:UIBarButtonItemStylePlain target:self action:@selector(handleMoreInfo:)];
   }
-  NSString *url = payload[@"url"];
+  [self.navigationItem setRightBarButtonItem:_moreInfoButtonItem animated:NO];
+}
+
+#pragma mark - GDD
+- (id <GDDPresenter>)presenter {
+  return self;
+}
+
+- (void)update:(GDCWebViewController *)view withData:(NSDictionary *)data {
+  if (data[@"delegate"]) {
+    self.delegate = data[@"delegate"];
+  }
+  NSString *url = data[@"url"];
   if (url) {
     [self openUrl:url];
   }
-  if (payload[@"rightBarButtonItem"]) {
-    self.navigationItem.rightBarButtonItem = payload[@"rightBarButtonItem"];
+  if (data[@"rightBarButtonItem"]) {
+    self.navigationItem.rightBarButtonItem = data[@"rightBarButtonItem"];
   }
 }
 
 - (void)updateNavBarItems {
+  NSMutableArray *leftBarButtonItems = self.navigationItem.leftBarButtonItems.mutableCopy ? : [NSMutableArray array];
   if (self.webView.canGoBack) {
     self.navigationController.interactivePopGestureRecognizer.enabled = NO;
-    [self.navigationItem setLeftBarButtonItems:@[self.closeButtonItem] animated:NO];
+    if (![leftBarButtonItems containsObject:self.closeButtonItem]) {
+      [leftBarButtonItems addObject:self.closeButtonItem];
+      [self.navigationItem setLeftBarButtonItems:leftBarButtonItems animated:NO];
+    }
   } else {
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
-    [self.navigationItem setLeftBarButtonItems:nil];
+    if ([self.navigationItem.leftBarButtonItems containsObject:self.closeButtonItem]) {
+      [leftBarButtonItems removeObject:self.closeButtonItem];
+      [self.navigationItem setLeftBarButtonItems:leftBarButtonItems animated:NO];
+    }
   }
 }
 
@@ -124,8 +161,38 @@
   return _closeButtonItem;
 }
 
+- (UIBarButtonItem *)backButtonItem {
+  if (!_backButtonItem) {
+    UIImage *backImg = [UIImage imageNamed:@"yuyue_ic_arrow_nor"];
+    UIButton *backButton  =[UIButton buttonWithType:UIButtonTypeCustom];
+    [backButton setBackgroundImage:backImg forState:UIControlStateNormal];
+    backButton.frame = CGRectMake(0, 0, backImg.size.width, backImg.size.height);
+    [backButton addTarget:self action:@selector(handleBack:) forControlEvents:UIControlEventTouchUpInside];
+    _backButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+  }
+  return _backButtonItem;
+}
+
+- (void)handleBack:(UIBarButtonItem *)sender {
+  if (self.webView.canGoBack) {
+    [self.webView goBack];
+    [self updateNavBarItems];
+    // make sure the back indicator view alpha back to 1
+//    self.navigationController.navigationBar.subviews.lastObject.alpha = 1;
+  } else {
+    [self handleClose:sender];
+  }
+}
+
 - (void)handleClose:(UIBarButtonItem *)sender {
-  [GDDViewControllerHelper up:nil];
+  GDDViewControllerTransition.new.toUp();
+}
+
+- (void)handleMoreInfo:(UIBarButtonItem *)sender {
+  // 弹出分享框
+  if (_moreButtonClickedBlock) {
+    _moreButtonClickedBlock();
+  }
 }
 
 #pragma mark - UIWebViewDelegate
@@ -151,9 +218,9 @@
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
   [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 
-  if (!_isTopLevelNavigation) {
-    return;
-  }
+//  if (!_isTopLevelNavigation) {
+//    return;
+//  }
   NSString *title = [self.webView stringByEvaluatingJavaScriptFromString:@"document.title"];
   if (title.length > 10) {
     title = [[title substringToIndex:9] stringByAppendingString:@"…"];
@@ -188,4 +255,24 @@
 - (void)webViewProgress:(NJKWebViewProgress *)webViewProgress updateProgress:(float)progress {
   [self.progressView setProgress:progress animated:YES];
 }
+
+#pragma mark - Appearance
++ (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size {
+  CGRect rect = CGRectMake(0.0f, 0.0f, size.width, size.height);
+  
+  UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
+  [color setFill];
+  UIRectFill(rect);
+  
+  UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  
+  return image;
+}
+
+
+@end
+
+@implementation GDCMoreInfoButtonAppearance
+
 @end

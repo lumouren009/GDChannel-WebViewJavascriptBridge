@@ -103,7 +103,8 @@ static int logMaxLength = 500;
 
 - (void)injectJavascriptFile {
     NSString *js = GDCJavascriptBus_js();
-    js = [js stringByReplacingOccurrencesOfString:@"JAVASCRIPT_TOPIC_PREFIX" withString:[GDCBusProvider.clientId stringByAppendingString:@"/"]];
+    js = [js stringByReplacingOccurrencesOfString:@"JAVASCRIPT_TOPIC_PREFIX" withString:[NSString stringWithFormat:@"/%@/", kJsBridgeTopicPrefix]];
+    js = [js stringByReplacingOccurrencesOfString:@"JAVASCRIPT_CID" withString:GDCBusProvider.clientId];
     [self _evaluateJavascript:js];
     if (self.startupMessageQueue) {
         NSArray* queue = self.startupMessageQueue;

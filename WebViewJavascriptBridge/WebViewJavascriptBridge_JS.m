@@ -29,6 +29,7 @@ NSString * GDCJavascriptBus_js() {
 		// attributes
 		this.state = realtime.channel.Bus.CONNECTING;
 		this.topicPrefix = 'JAVASCRIPT_TOPIC_PREFIX';
+    	this.cid = 'JAVASCRIPT_CID';
 		this.handlers = {};
 		this.replyHandlers = {};
 
@@ -96,7 +97,7 @@ NSString * GDCJavascriptBus_js() {
 					var handler = self.replyHandlers[topic];
 					delete self.replyHandlers[topic];
 					var error = message["error"];
-					handler({"failed": error ? ture : false, "cause": error, "result": message});
+					handler({"failed": error ? true : false, "cause": error, "result": message});
 				} else {
 					if (json.type === 'err') {
 						self.onerror(message);
@@ -214,17 +215,24 @@ NSString * GDCJavascriptBus_js() {
   Bus.CLOSED = 3;
 	window.bus = window.GDCWebViewJavascriptBus = new realtime.channel.Bus();
   window.bus.state = Bus.OPEN;
-
+	window.cid = window.bus.cid;
+	window.handler = function(messageOrAsyncResult) {
+			window.msg = messageOrAsyncResult.result ? messageOrAsyncResult.result : messageOrAsyncResult;
+			if (messageOrAsyncResult.failed) {
+				console.error(messageOrAsyncResult.cause);
+			}
+			console.log(JSON.stringify(msg, null, 4));
+		};
 
 	// 兼容旧接口
 	var bridge = {};
 	bridge.on = function(topic, callback) {
-		return bus.subscribeLocal(bus.topicPrefix + topic, function(message) {
+		return bus.subscribeLocal(bus.cid + bus.topicPrefix + topic, function(message) {
 			callback(message.payload);
 		});
 	};
 	bridge.invoke = function(topic, payload, callback) {
-		bus.sendLocal(bus.topicPrefix + topic, payload, function(asyncResult) {
+		bus.sendLocal(bus.cid + bus.topicPrefix + topic, payload, function(asyncResult) {
 			if (asyncResult.failed) {
 				callback({"errCode": asyncResult.cause.code, "errMsg": asyncResult.cause, "result": null});
 			} else {
