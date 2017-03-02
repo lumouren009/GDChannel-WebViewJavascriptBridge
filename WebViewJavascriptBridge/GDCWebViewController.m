@@ -30,7 +30,7 @@
 
 #pragma mark - View lifecycle
 - (instancetype)init {
-  self = [super initWithNibName:NSStringFromClass(self.class) bundle:nil];
+  self = [super initWithNibName:NSStringFromClass(GDCWebViewController.class) bundle:nil];
   if (self) {
     super.viewOption.setStatusBarStyle(UIStatusBarStyleLightContent).setHidesBottomBarWhenPushed(YES).setNavBar(GDPBBool_True);
   }
