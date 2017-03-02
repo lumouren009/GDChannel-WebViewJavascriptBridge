@@ -9,6 +9,7 @@
 #import "NJKWebViewProgress.h"
 #import "NJKWebViewProgressView.h"
 #import "GDDViewControllerTransition.h"
+#import "UIViewController+GDDataDrivenView.h"
 
 @interface GDCWebViewController () <UIWebViewDelegate, NJKWebViewProgressDelegate>
 @property(weak, nonatomic) IBOutlet NJKWebViewProgressView *progressView;
@@ -19,16 +20,22 @@
   WebViewJavascriptBridge *_bridge;
   UIBarButtonItem *_backButtonItem;
   UIBarButtonItem *_closeButtonItem;
-  UIBarButtonItem *_moreInfoButtonItem;
   id <AspectToken> _aspectHook;
 
   NJKWebViewProgress *_progressProxy;
   NSURL *_url;
   BOOL _isTopLevelNavigation;
-  void (^_moreButtonClickedBlock)();
+  
 }
 
 #pragma mark - View lifecycle
+- (instancetype)init {
+  self = [super initWithNibName:NSStringFromClass(self.class) bundle:nil];
+  if (self) {
+    super.viewOption.setStatusBarStyle(UIStatusBarStyleLightContent).setHidesBottomBarWhenPushed(YES).setNavBar(GDPBBool_True);
+  }
+  return self;
+}
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -108,34 +115,7 @@
   }
 }
 
-- (void)addMoreInfoButtonWithAppearance:(GDCMoreInfoButtonAppearance *)appearance handler:(void(^)())handler {
-  _moreButtonClickedBlock = [handler copy];
-  
-  if (appearance.type == GDCMoreInfoButtonTypeShare) {
-    _moreInfoButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_more"] style:UIBarButtonItemStylePlain target:self action:@selector(handleMoreInfo:)];
-  } else if (appearance.type == GDCMoreInfoButtonTypeAction) {
-    _moreInfoButtonItem = [[UIBarButtonItem alloc] initWithTitle:appearance.title style:UIBarButtonItemStylePlain target:self action:@selector(handleMoreInfo:)];
-  }
-  [self.navigationItem setRightBarButtonItem:_moreInfoButtonItem animated:NO];
-}
 
-#pragma mark - GDD
-- (id <GDDPresenter>)presenter {
-  return self;
-}
-
-- (void)update:(GDCWebViewController *)view withData:(NSDictionary *)data {
-  if (data[@"delegate"]) {
-    self.delegate = data[@"delegate"];
-  }
-  NSString *url = data[@"url"];
-  if (url) {
-    [self openUrl:url];
-  }
-  if (data[@"rightBarButtonItem"]) {
-    self.navigationItem.rightBarButtonItem = data[@"rightBarButtonItem"];
-  }
-}
 
 - (void)updateNavBarItems {
   NSMutableArray *leftBarButtonItems = self.navigationItem.leftBarButtonItems.mutableCopy ? : [NSMutableArray array];
@@ -188,12 +168,6 @@
   GDDViewControllerTransition.new.toUp();
 }
 
-- (void)handleMoreInfo:(UIBarButtonItem *)sender {
-  // 弹出分享框
-  if (_moreButtonClickedBlock) {
-    _moreButtonClickedBlock();
-  }
-}
 
 #pragma mark - UIWebViewDelegate
 
@@ -270,9 +244,5 @@
   return image;
 }
 
-
-@end
-
-@implementation GDCMoreInfoButtonAppearance
 
 @end
