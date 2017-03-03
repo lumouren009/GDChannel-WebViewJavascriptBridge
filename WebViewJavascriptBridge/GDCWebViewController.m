@@ -32,7 +32,7 @@
 - (instancetype)init {
   self = [super initWithNibName:NSStringFromClass(GDCWebViewController.class) bundle:nil];
   if (self) {
-    super.viewOption.setStatusBarStyle(UIStatusBarStyleLightContent).setHidesBottomBarWhenPushed(YES).setNavBar(GDPBBool_True);
+    super.viewOption.setHidesBottomBarWhenPushed(YES).setNavBar(GDPBBool_True);
   }
   return self;
 }
@@ -51,11 +51,6 @@
   self.navigationItem.hidesBackButton = YES;
   [self.navigationItem setLeftBarButtonItems:@[self.backButtonItem] animated:NO];
 
-  UINavigationBar *navBar = self.navigationController.navigationBar;
-  [navBar setTintColor:[UIColor blackColor]];
-  [navBar setTranslucent:NO];
-  [navBar setTitleTextAttributes:@{NSFontAttributeName: [UIFont systemFontOfSize:18], NSForegroundColorAttributeName: [UIColor blackColor]}];
-  
   _webView.scalesPageToFit = YES;
   _webView.allowsInlineMediaPlayback = YES; //允许使用H5内置播放器
 }
