@@ -140,8 +140,9 @@
   if (!_backButtonItem) {
     UIImage *backImg = [UIImage imageNamed:@"yuyue_ic_arrow_nor"];
     UIButton *backButton  =[UIButton buttonWithType:UIButtonTypeCustom];
-    [backButton setBackgroundImage:backImg forState:UIControlStateNormal];
+    [backButton setImage:backImg forState:UIControlStateNormal];
     backButton.frame = CGRectMake(0, 0, backImg.size.width, backImg.size.height);
+    backButton.imageEdgeInsets = UIEdgeInsetsMake(0, -5.5, 0, 5.5); // 由于image不贴边，所以调整image的位置
     [backButton addTarget:self action:@selector(handleBack:) forControlEvents:UIControlEventTouchUpInside];
     _backButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
   }

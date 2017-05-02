@@ -9,5 +9,6 @@
 @property (nullable, nonatomic, assign) id <UIWebViewDelegate> delegate;
 
 - (void)openUrl:(NSString *)url;
+- (void)handleBack:(UIBarButtonItem *)sender;
 
 @end
